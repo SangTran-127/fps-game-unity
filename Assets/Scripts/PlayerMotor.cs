@@ -24,6 +24,26 @@ public class PlayerMotor : MonoBehaviour
     void Update()
     {
         isGrounded = controller.isGrounded;
+        if (lerpCrouch)
+        {
+            crouchTimer += Time.deltaTime;
+            float p = crouchTimer / 1;
+            p *= p;
+            if (crouching)
+            {
+                controller.height = Mathf.Lerp(controller.height, 1, p);
+                speed = 1;
+            } else
+            {
+                controller.height = Mathf.Lerp(controller.height, 2, p);
+                speed = 5;
+            }
+            if (p > 1)
+            {
+                lerpCrouch = false;
+                crouchTimer = 0f;
+            }
+        }
     }
     // receive input for our InputManager.cs and apply them to our character controller
     public void ProcessMove(Vector2 input)
@@ -46,6 +66,25 @@ public class PlayerMotor : MonoBehaviour
         if (isGrounded)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeihgt * -3.0f * gravity);
+        }
+    }
+
+    public void Crouch()
+    {
+        crouching = !crouching;
+        crouchTimer = 0;
+        lerpCrouch = true;
+    }
+
+    public void Sprint()
+    {
+        sprinting = !sprinting;
+        if (sprinting)
+        {
+            speed = 8;
+        } else
+        {
+            speed = 5;
         }
     }
 }
